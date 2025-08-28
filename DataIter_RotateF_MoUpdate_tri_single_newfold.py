@@ -11,9 +11,7 @@ import torch.utils.data as data
 import os
 import time
 
-"""
-20220509: 增加了对CornellKinFace(不区分relation)、UBKinFace数据集的处理
-"""
+
 transform_train = transforms.Compose([
     transforms.Resize(73),
     transforms.RandomCrop(64),
@@ -220,11 +218,10 @@ def meta_data_loader(batch_size, relat, k, test_fold, data_root='./data/KinFaceW
     cc = len(ngData)
     each_fold = int(cc / 5)
 
-    # 将csv文件内数据读出
+  
     csv_data = pd.read_csv(fold_root)
 
-    #   添加新的foldn
-    ngList = []  # 准备一个列表，把新列的数据存入其中
+ 
     index = 0
     for i, row in csv_data.iterrows():  # 遍历数据表，计算每一位名字的长度
         if row['fold'] != test_fold:
@@ -431,7 +428,7 @@ def meta_data_loader(batch_size, relat, k, test_fold, data_root='./data/KinFaceW
 def meta_data_loaderRandomFold(batch_size, relat, k, test_fold, data_root='./data/KinFaceW-I/', jig_classes=100,
                                tile_transformer=None, patches=True,
                                bias_whole_image=None):
-    # 构建新的fold时不是顺序划分为5个fold，而是随机划分
+   
     fold_root = data_root + "labels/" + relat + ".csv"
     ngData = pd.read_csv(fold_root)
     ngData = ngData[ngData['fold'] != test_fold]
@@ -672,13 +669,8 @@ class train_pos_dataloader(data.Dataset):
             else:
                 ngList.append(0)
         csv_data['foldn'] = ngList  # 注明列名，就可以直接添加新列
-        # csv_data.to_csv('../data/namegender.csv', index=False)  # 把数据写入数据集，index=False表示不加索引
-        # 注意这里的ngData['length']=ngList是直接在原有数据基础上加了一列新的数据，也就是说现在的ngData已经具备完整的3列数据
-        # 不用再在to_csv中加mode=‘a’这个参数，实现不覆盖添加。
-
-        # 查看修改后的csv文件
-        # ngData1 = pd.read_csv('../data/namegender.csv')
-        # print("new ngData:\n", ngData1)
+     
+   
         k.append(0)
         for t in k:
             csv_data = csv_data[csv_data['foldn'] != t]

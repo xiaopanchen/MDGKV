@@ -11,12 +11,8 @@ from KinRelation import KinRelation, resnet18, KinRel
 from resnet_zl import *
 import ZL.loss as ZLoss
 
-"""
-只用一个数据集，选择其中一个fold为target，剩下的4个fold中选择一个作为meta-test，最后的3个fold作为meta-train. 202220218
-使用角度自监督,原图来亲属关系判别,旋转的图来约束特征
-将训练数据划分为4:1,4份为meta-train,1份为meta-test 20220507
-每个epoch从新建的五个fold中随机选择一个fold作为meta-test,剩下的作为meta-train 20220510
-"""
+
+
 parser = argparse.ArgumentParser(description='PyTorch Kinship')
 # for kinfacew-I->batch-c=4; kinfaceW-II: batch-c=2
 parser.add_argument('--batch-c', type=int, default=2, metavar='N',
@@ -27,7 +23,7 @@ parser.add_argument('--lr-decay', type=float, default=0.1,
                     help='decay rate of learning rate. default is 0.1.')
 # The positive sample batch size on  the KinFaceW-II and TSKinFace datasets was set 16.
 # The positive sample batch size on the KinFaceW-I and Cornell KinFace datasets was set to 8
-# 实际在后面用的时候都除了2，因此这里的值要*2
+
 parser.add_argument('--batch-size', type=int, default=16, metavar='N',
                     help='input batch size for training (default: 32)')
 parser.add_argument('--valid-batch-size', type=int, default=16, metavar='N',
@@ -305,7 +301,7 @@ else:
 time1 = []
 
 for relat in relationlist:
-    # 对于UBKinFace应该选择在源数据集上的那个kinship type来进行训练
+  
     train_relat = relat
     total_test = 0
     use_target = False
@@ -319,7 +315,6 @@ for relat in relationlist:
     train_time = 0
     test_time = 0
     for k in range(1, 6):
-        # 对原始数据集来说kth fold作为测试集始终不变
         validset = test_dataloader(relat=relat, k=k, data_root=args.target)
         validloader = torch.utils.data.DataLoader(validset, batch_size=args.valid_batch_size, shuffle=False,
                                                   num_workers=args.num_workers,
@@ -507,7 +502,7 @@ for relat in relationlist:
 
                 real_kin_model.zero_grad()
                 grad_info = torch.autograd.grad(loss_meta_train, real_kin_model.params(), create_graph=True)
-                # 复制meta-train的model到meta-test上
+                
                 newMeta = train_Net_zl_RotateF(
                     angle_classes=args.rotate_n_classes).cuda()  # create a new model for meta-test
                 # creatmodel = time.time()
